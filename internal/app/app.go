@@ -17,6 +17,7 @@ import (
 	"github.com/pranshuparmar/witr/internal/source"
 	"github.com/pranshuparmar/witr/internal/target"
 	"github.com/pranshuparmar/witr/internal/tui"
+	"github.com/pranshuparmar/witr/internal/web"
 	"github.com/pranshuparmar/witr/pkg/model"
 	"github.com/spf13/cobra"
 )
@@ -90,6 +91,11 @@ func _genExamples() string {
 
   # Mixed inputs
   witr nginx --pid 1234 --port 8080
+
+  # Launch the browser-based visual interface
+  witr --web
+  witr --web --web-open
+  witr --web --web-addr 0.0.0.0:7331
 `
 }
 
@@ -147,6 +153,9 @@ func init() {
 	rootCmd.Flags().Bool("verbose", false, "show extended process information")
 	rootCmd.Flags().BoolP("exact", "x", false, "use exact name matching (no substring search)")
 	rootCmd.Flags().BoolP("interactive", "i", false, "interactive mode (TUI)")
+	rootCmd.Flags().Bool("web", false, "start browser-based visual interface")
+	rootCmd.Flags().String("web-addr", "127.0.0.1:7331", "address for --web mode")
+	rootCmd.Flags().Bool("web-open", false, "open the browser when starting --web mode")
 
 }
 
@@ -163,6 +172,13 @@ type appFlags struct {
 }
 
 func runApp(cmd *cobra.Command, args []string) error {
+	webFlag, _ := cmd.Flags().GetBool("web")
+	if webFlag {
+		addr, _ := cmd.Flags().GetString("web-addr")
+		openBrowser, _ := cmd.Flags().GetBool("web-open")
+		return web.Start(addr, version, openBrowser)
+	}
+
 	interactiveFlag, _ := cmd.Flags().GetBool("interactive")
 	if interactiveFlag {
 		return runInteractive()

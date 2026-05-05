@@ -61,6 +61,14 @@ witr [process name...] [flags]
   # Mixed inputs
   witr nginx --pid 1234 --port 8080
 
+  # Launch the browser-based visual interface
+  witr --web
+  witr --web --web-open
+  witr --web --web-addr 0.0.0.0:7331
+
+  # The web GUI is embedded in the native binary; do not run it in Docker
+  # if you need to inspect host processes and ports.
+
 ```
 
 ### Options
@@ -79,5 +87,7 @@ witr [process name...] [flags]
   -t, --tree           show only ancestry as a tree
       --verbose        show extended process information
       --warnings       show only warnings
+      --web            start browser-based visual interface
+      --web-addr string   address for --web mode (default "127.0.0.1:7331")
+      --web-open       open the browser when starting --web mode
 ```
-

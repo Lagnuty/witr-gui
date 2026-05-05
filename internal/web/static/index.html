@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>witr GUI</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark">W</div>
+          <div>
+            <strong>witr</strong>
+            <span>Why is this running?</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-button active" data-view="inspect" title="Inspect target">
+            <span class="nav-icon">?</span><span>Inspect</span>
+          </button>
+          <button class="nav-button" data-view="processes" title="Browse processes">
+            <span class="nav-icon">P</span><span>Processes</span>
+          </button>
+          <button class="nav-button" data-view="ports" title="Browse ports">
+            <span class="nav-icon">O</span><span>Ports</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-status">
+          <span class="status-dot"></span>
+          <div>
+            <strong id="serverVersion">Local server</strong>
+            <span id="serverMeta">Connecting...</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section id="view-inspect" class="view active" aria-labelledby="inspectTitle">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Live process causality</p>
+              <h1 id="inspectTitle">Inspect any process, port, PID, or file</h1>
+            </div>
+            <button id="refreshAll" class="icon-button" title="Refresh data" aria-label="Refresh data">R</button>
+          </header>
+
+          <form id="inspectForm" class="inspect-bar">
+            <label>
+              <span>Target type</span>
+              <select id="targetType">
+                <option value="name">Process name</option>
+                <option value="pid">PID</option>
+                <option value="port">Port</option>
+                <option value="file">File</option>
+              </select>
+            </label>
+            <label class="target-input">
+              <span>Target</span>
+              <input id="targetValue" autocomplete="off" placeholder="nginx, 5432, /var/lib/dpkg/lock" />
+            </label>
+            <label class="check-control">
+              <input id="exactMatch" type="checkbox" />
+              <span>Exact</span>
+            </label>
+            <label class="check-control">
+              <input id="verboseMode" type="checkbox" checked />
+              <span>Verbose</span>
+            </label>
+            <button class="primary-button" type="submit">Analyze</button>
+          </form>
+
+          <div id="message" class="message" role="status"></div>
+
+          <section id="matchesPanel" class="matches-panel hidden" aria-live="polite">
+            <div class="section-title">
+              <h2>Multiple matches</h2>
+              <span>Choose a PID to continue</span>
+            </div>
+            <div id="matchesList" class="match-grid"></div>
+          </section>
+
+          <section id="resultPanel" class="result-layout hidden">
+            <div class="summary-panel">
+              <div class="process-heading">
+                <div>
+                  <p class="eyebrow">Resolved target</p>
+                  <h2 id="processName">No result</h2>
+                  <p id="processCmd" class="muted mono"></p>
+                </div>
+                <div class="pid-badge">
+                  <span>PID</span>
+                  <strong id="processPid">0</strong>
+                </div>
+              </div>
+
+              <div class="metric-grid">
+                <div><span>Source</span><strong id="sourceType">unknown</strong></div>
+                <div><span>User</span><strong id="processUser">unknown</strong></div>
+                <div><span>Health</span><strong id="processHealth">unknown</strong></div>
+                <div><span>Started</span><strong id="processStarted">unknown</strong></div>
+              </div>
+
+              <div class="action-strip">
+                <button data-action="term" class="danger-soft">TERM</button>
+                <button data-action="kill" class="danger">KILL</button>
+                <button data-action="pause">Pause</button>
+                <button data-action="resume">Resume</button>
+                <label class="renice-box">
+                  <span>Nice</span>
+                  <input id="niceValue" type="number" min="-20" max="19" value="0" />
+                  <button data-action="renice" type="button">Apply</button>
+                </label>
+              </div>
+            </div>
+
+            <div class="tabs" role="tablist">
+              <button class="tab active" data-tab="overview">Overview</button>
+              <button class="tab" data-tab="tree">Tree</button>
+              <button class="tab" data-tab="network">Network</button>
+              <button class="tab" data-tab="env">Env</button>
+              <button class="tab" data-tab="raw">Raw</button>
+            </div>
+
+            <section id="tab-overview" class="tab-panel active">
+              <div class="two-column">
+                <div>
+                  <h3>Process details</h3>
+                  <dl id="detailList" class="detail-list"></dl>
+                </div>
+                <div>
+                  <h3>Warnings</h3>
+                  <div id="warningsList" class="warning-list"></div>
+                </div>
+              </div>
+            </section>
+
+            <section id="tab-tree" class="tab-panel">
+              <div id="treeGraph" class="tree-graph"></div>
+              <h3>Children</h3>
+              <div id="childrenList" class="compact-list"></div>
+            </section>
+
+            <section id="tab-network" class="tab-panel">
+              <div class="two-column">
+                <div>
+                  <h3>Listening ports</h3>
+                  <div id="listeningPorts" class="compact-list"></div>
+                </div>
+                <div>
+                  <h3>Socket state</h3>
+                  <pre id="socketInfo" class="code-output"></pre>
+                </div>
+              </div>
+            </section>
+
+            <section id="tab-env" class="tab-panel">
+              <div class="toolbar-line">
+                <input id="envFilter" placeholder="Filter environment variables" />
+                <span id="envCount" class="muted"></span>
+              </div>
+              <pre id="envOutput" class="code-output tall"></pre>
+            </section>
+
+            <section id="tab-raw" class="tab-panel">
+              <div class="toolbar-line">
+                <select id="rawMode">
+                  <option value="standard">Standard</option>
+                  <option value="tree">Tree</option>
+                  <option value="short">Short</option>
+                  <option value="warnings">Warnings</option>
+                  <option value="env">Environment</option>
+                  <option value="json">JSON</option>
+                </select>
+                <button id="copyRaw" type="button">Copy</button>
+              </div>
+              <pre id="rawOutput" class="code-output tall"></pre>
+            </section>
+          </section>
+        </section>
+
+        <section id="view-processes" class="view" aria-labelledby="processesTitle">
+          <header class="page-header compact">
+            <div>
+              <p class="eyebrow">System snapshot</p>
+              <h1 id="processesTitle">Processes</h1>
+            </div>
+            <div class="toolbar-line">
+              <input id="processFilter" placeholder="Search PID, user, name, command" />
+              <button id="reloadProcesses" class="icon-button" title="Reload processes">R</button>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-sort="PID">PID</th>
+                  <th data-sort="User">User</th>
+                  <th data-sort="Command">Name</th>
+                  <th data-sort="CPUPercent">CPU</th>
+                  <th data-sort="MemoryRSS">Memory</th>
+                  <th data-sort="StartedAt">Started</th>
+                  <th>Command</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="processRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-ports" class="view" aria-labelledby="portsTitle">
+          <header class="page-header compact">
+            <div>
+              <p class="eyebrow">Network bindings</p>
+              <h1 id="portsTitle">Ports</h1>
+            </div>
+            <div class="toolbar-line">
+              <input id="portFilter" placeholder="Search port, protocol, address, state" />
+              <label class="check-control">
+                <input id="showAllPorts" type="checkbox" />
+                <span>All states</span>
+              </label>
+              <button id="reloadPorts" class="icon-button" title="Reload ports">R</button>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-port-sort="Port">Port</th>
+                  <th data-port-sort="Protocol">Protocol</th>
+                  <th data-port-sort="Address">Address</th>
+                  <th data-port-sort="State">State</th>
+                  <th data-port-sort="PID">PID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="portRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

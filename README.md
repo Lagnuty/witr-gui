@@ -496,6 +496,30 @@ Running `witr` without any arguments or with the `-i` flag launches the **Intera
 - **Process Actions**: Send signals (Kill, Terminate, Pause, Resume) or Renice processes directly from the UI.
 - **Mouse Support**: Navigate, sort columns, and click rows using your mouse.
 
+### Browser GUI
+
+For a graphical browser interface, start the embedded web server:
+
+```bash
+witr --web
+```
+
+Use `--web-open` to open the local site in your default browser automatically:
+
+```bash
+witr --web --web-open
+```
+
+By default it listens on `127.0.0.1:7331`. The GUI is meant to run natively on the machine you want to inspect; running it inside Docker will only show processes and ports visible inside that container. To expose it from a remote Ubuntu host, bind it explicitly:
+
+```bash
+witr --web --web-addr 0.0.0.0:7331
+```
+
+The web GUI includes full process and port dashboards, click-through details for every process and port owner, target inspection by name, PID, port, or file, ancestry, warnings, environment, raw output views, and the same supported process actions as the TUI.
+
+Release binaries for Windows and macOS include the web GUI because the site assets are embedded into the native `witr` executable. No separate Node server, Docker image, or frontend build step is required for users.
+
 ---
 
 ## 4. Flags & Options
@@ -515,13 +539,16 @@ Running `witr` without any arguments or with the `-i` flag launches the **Intera
       --verbose          show extended process information
   -v, --version          version for witr
       --warnings         show only warnings
+      --web              start browser-based visual interface
+      --web-addr string  address for --web mode (default "127.0.0.1:7331")
+      --web-open         open the browser when starting --web mode
 ```
 
 Positional arguments (without flags) are treated as process or service names. Multiple names can be passed. By default, name matching uses substring matching (fuzzy search). Use `--exact` to match only processes with the exact name.
 
 All target flags (`--pid`, `--port`, `--file`) are repeatable and can be mixed with each other and with positional name arguments. When multiple targets are provided, results are shown sequentially with labeled dividers. All output modes (standard, short, tree, JSON, env, warnings, verbose) work with multiple inputs.
 
-The TUI is launched if no arguments or relevant flags (`--pid`, `--port`, `--file`) are provided, or if the `--interactive` flag is explicitly used.
+The TUI is launched if no arguments or relevant flags (`--pid`, `--port`, `--file`) are provided, or if the `--interactive` flag is explicitly used. Use `--web` when you want the browser-based GUI instead.
 
 ---
 
