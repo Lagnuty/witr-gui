@@ -1,0 +1,6 @@
+7ed11b670a2b45495dd20849d6134cbc7bedd1fffd08272cf334ce35a694d286  witr-gui-darwin-amd64-v0.3.1-gui.zip
+77ca67ae3361577e25cd9b7cc0857f0d422f5c3d284a3fb7ef30a60c354e306f  witr-gui-darwin-arm64-v0.3.1-gui.zip
+18bdcc6135df1e8690f1e1255d468d74d6fada5eedef71e32a38a2f52e76a693  witr-gui-linux-amd64-v0.3.1-gui.zip
+846dd7ac6201ea9b71572802214e4ca754c931111a598cd08b8acf4a7f4e10ae  witr-gui-linux-arm64-v0.3.1-gui.zip
+ac731eccdc087b4cb6edec51728f103658e6fb92aa91e2009aa1d48196d5e16a  witr-gui-windows-amd64-v0.3.1-gui.zip
+739e160464ceca6b42681be1eb110592818ed405212251e4424fc37ae9eb6c7d  witr-gui-windows-arm64-v0.3.1-gui.zip
