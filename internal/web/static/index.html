@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,27 +13,35 @@
           <div class="brand-mark">W</div>
           <div>
             <strong>witr</strong>
-            <span>Why is this running?</span>
+            <span data-i18n="tagline">Почему это запущено?</span>
           </div>
         </div>
 
         <nav class="nav">
           <button class="nav-button active" data-view="inspect" title="Inspect target">
-            <span class="nav-icon">?</span><span>Inspect</span>
+            <span class="nav-icon">?</span><span data-i18n="navInspect">Проверка</span>
           </button>
           <button class="nav-button" data-view="processes" title="Browse processes">
-            <span class="nav-icon">P</span><span>Processes</span>
+            <span class="nav-icon">P</span><span data-i18n="navProcesses">Процессы</span>
           </button>
           <button class="nav-button" data-view="ports" title="Browse ports">
-            <span class="nav-icon">O</span><span>Ports</span>
+            <span class="nav-icon">O</span><span data-i18n="navPorts">Порты</span>
           </button>
         </nav>
+
+        <label class="language-select">
+          <span data-i18n="language">Язык</span>
+          <select id="languageSelect">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select>
+        </label>
 
         <div class="sidebar-status">
           <span class="status-dot"></span>
           <div>
-            <strong id="serverVersion">Local server</strong>
-            <span id="serverMeta">Connecting...</span>
+            <strong id="serverVersion" data-i18n="localServer">Локальный сервер</strong>
+            <span id="serverMeta" data-i18n="connecting">Подключение...</span>
           </div>
         </div>
       </aside>
@@ -42,43 +50,43 @@
         <section id="view-inspect" class="view active" aria-labelledby="inspectTitle">
           <header class="page-header">
             <div>
-              <p class="eyebrow">Live process causality</p>
-              <h1 id="inspectTitle">Inspect any process, port, PID, or file</h1>
+              <p class="eyebrow" data-i18n="inspectEyebrow">Живой анализ причин</p>
+              <h1 id="inspectTitle" data-i18n="inspectTitle">Проверь процесс, порт, PID или файл</h1>
             </div>
             <button id="refreshAll" class="icon-button" title="Refresh data" aria-label="Refresh data">R</button>
           </header>
 
           <form id="inspectForm" class="inspect-bar">
             <label>
-              <span>Target type</span>
+              <span data-i18n="targetType">Тип цели</span>
               <select id="targetType">
-                <option value="name">Process name</option>
+                <option value="name" data-i18n="targetName">Имя процесса</option>
                 <option value="pid">PID</option>
-                <option value="port">Port</option>
-                <option value="file">File</option>
+                <option value="port" data-i18n="targetPort">Порт</option>
+                <option value="file" data-i18n="targetFile">Файл</option>
               </select>
             </label>
             <label class="target-input">
-              <span>Target</span>
+              <span data-i18n="target">Цель</span>
               <input id="targetValue" autocomplete="off" placeholder="nginx, 5432, /var/lib/dpkg/lock" />
             </label>
             <label class="check-control">
               <input id="exactMatch" type="checkbox" />
-              <span>Exact</span>
+              <span data-i18n="exact">Точно</span>
             </label>
             <label class="check-control">
               <input id="verboseMode" type="checkbox" checked />
-              <span>Verbose</span>
+              <span data-i18n="verbose">Подробно</span>
             </label>
-            <button class="primary-button" type="submit">Analyze</button>
+            <button class="primary-button" type="submit" data-i18n="analyze">Анализ</button>
           </form>
 
           <div id="message" class="message" role="status"></div>
 
           <section id="matchesPanel" class="matches-panel hidden" aria-live="polite">
             <div class="section-title">
-              <h2>Multiple matches</h2>
-              <span>Choose a PID to continue</span>
+              <h2 data-i18n="multipleMatches">Несколько совпадений</h2>
+              <span data-i18n="choosePid">Выбери PID для продолжения</span>
             </div>
             <div id="matchesList" class="match-grid"></div>
           </section>
@@ -87,8 +95,11 @@
             <div class="summary-panel">
               <div class="process-heading">
                 <div>
-                  <p class="eyebrow">Resolved target</p>
-                  <h2 id="processName">No result</h2>
+                  <p class="eyebrow" data-i18n="resolvedTarget">Найденная цель</p>
+                  <div class="process-title-row">
+                    <span id="processIcon" class="process-icon lg">APP</span>
+                    <h2 id="processName" data-i18n="noResult">Нет результата</h2>
+                  </div>
                   <p id="processCmd" class="muted mono"></p>
                 </div>
                 <div class="pid-badge">
@@ -98,41 +109,41 @@
               </div>
 
               <div class="metric-grid">
-                <div><span>Source</span><strong id="sourceType">unknown</strong></div>
-                <div><span>User</span><strong id="processUser">unknown</strong></div>
-                <div><span>Health</span><strong id="processHealth">unknown</strong></div>
-                <div><span>Started</span><strong id="processStarted">unknown</strong></div>
+                <div><span data-i18n="source">Источник</span><strong id="sourceType">unknown</strong></div>
+                <div><span data-i18n="user">Пользователь</span><strong id="processUser">unknown</strong></div>
+                <div><span data-i18n="health">Состояние</span><strong id="processHealth">unknown</strong></div>
+                <div><span data-i18n="started">Запущен</span><strong id="processStarted">unknown</strong></div>
               </div>
 
               <div class="action-strip">
                 <button data-action="term" class="danger-soft">TERM</button>
                 <button data-action="kill" class="danger">KILL</button>
-                <button data-action="pause">Pause</button>
-                <button data-action="resume">Resume</button>
+                <button data-action="pause" data-i18n="pause">Пауза</button>
+                <button data-action="resume" data-i18n="resume">Продолжить</button>
                 <label class="renice-box">
                   <span>Nice</span>
                   <input id="niceValue" type="number" min="-20" max="19" value="0" />
-                  <button data-action="renice" type="button">Apply</button>
+                  <button data-action="renice" type="button" data-i18n="apply">Применить</button>
                 </label>
               </div>
             </div>
 
             <div class="tabs" role="tablist">
-              <button class="tab active" data-tab="overview">Overview</button>
-              <button class="tab" data-tab="tree">Tree</button>
-              <button class="tab" data-tab="network">Network</button>
+              <button class="tab active" data-tab="overview" data-i18n="overview">Обзор</button>
+              <button class="tab" data-tab="tree" data-i18n="tree">Дерево</button>
+              <button class="tab" data-tab="network" data-i18n="network">Сеть</button>
               <button class="tab" data-tab="env">Env</button>
-              <button class="tab" data-tab="raw">Raw</button>
+              <button class="tab" data-tab="raw" data-i18n="raw">Raw</button>
             </div>
 
             <section id="tab-overview" class="tab-panel active">
               <div class="two-column">
                 <div>
-                  <h3>Process details</h3>
+                  <h3 data-i18n="processDetails">Детали процесса</h3>
                   <dl id="detailList" class="detail-list"></dl>
                 </div>
                 <div>
-                  <h3>Warnings</h3>
+                  <h3 data-i18n="warnings">Предупреждения</h3>
                   <div id="warningsList" class="warning-list"></div>
                 </div>
               </div>
@@ -140,18 +151,18 @@
 
             <section id="tab-tree" class="tab-panel">
               <div id="treeGraph" class="tree-graph"></div>
-              <h3>Children</h3>
+              <h3 data-i18n="children">Дочерние процессы</h3>
               <div id="childrenList" class="compact-list"></div>
             </section>
 
             <section id="tab-network" class="tab-panel">
               <div class="two-column">
                 <div>
-                  <h3>Listening ports</h3>
+                  <h3 data-i18n="listeningPorts">Слушающие порты</h3>
                   <div id="listeningPorts" class="compact-list"></div>
                 </div>
                 <div>
-                  <h3>Socket state</h3>
+                  <h3 data-i18n="socketState">Состояние сокета</h3>
                   <pre id="socketInfo" class="code-output"></pre>
                 </div>
               </div>
@@ -159,7 +170,7 @@
 
             <section id="tab-env" class="tab-panel">
               <div class="toolbar-line">
-                <input id="envFilter" placeholder="Filter environment variables" />
+                <input id="envFilter" data-i18n-placeholder="envFilter" placeholder="Фильтр переменных окружения" />
                 <span id="envCount" class="muted"></span>
               </div>
               <pre id="envOutput" class="code-output tall"></pre>
@@ -175,7 +186,7 @@
                   <option value="env">Environment</option>
                   <option value="json">JSON</option>
                 </select>
-                <button id="copyRaw" type="button">Copy</button>
+                <button id="copyRaw" type="button" data-i18n="copy">Копировать</button>
               </div>
               <pre id="rawOutput" class="code-output tall"></pre>
             </section>
@@ -185,11 +196,11 @@
         <section id="view-processes" class="view" aria-labelledby="processesTitle">
           <header class="page-header compact">
             <div>
-              <p class="eyebrow">System snapshot</p>
-              <h1 id="processesTitle">Processes</h1>
+              <p class="eyebrow" data-i18n="systemSnapshot">Снимок системы</p>
+              <h1 id="processesTitle" data-i18n="processesTitle">Процессы</h1>
             </div>
             <div class="toolbar-line">
-              <input id="processFilter" placeholder="Search PID, user, name, command" />
+              <input id="processFilter" data-i18n-placeholder="processFilter" placeholder="Поиск PID, пользователя, имени, команды" />
               <button id="reloadProcesses" class="icon-button" title="Reload processes">R</button>
             </div>
           </header>
@@ -198,13 +209,13 @@
               <thead>
                 <tr>
                   <th data-sort="PID">PID</th>
-                  <th data-sort="User">User</th>
-                  <th data-sort="Command">Name</th>
+                  <th data-sort="User" data-i18n="user">Пользователь</th>
+                  <th data-sort="Command" data-i18n="name">Имя</th>
                   <th data-sort="CPUPercent">CPU</th>
-                  <th data-sort="MemoryRSS">Memory</th>
-                  <th data-sort="StartedAt">Started</th>
-                  <th>Command</th>
-                  <th>Action</th>
+                  <th data-sort="MemoryRSS" data-i18n="memory">Память</th>
+                  <th data-sort="StartedAt" data-i18n="started">Запущен</th>
+                  <th data-i18n="command">Команда</th>
+                  <th data-i18n="action">Действие</th>
                 </tr>
               </thead>
               <tbody id="processRows"></tbody>
@@ -215,14 +226,14 @@
         <section id="view-ports" class="view" aria-labelledby="portsTitle">
           <header class="page-header compact">
             <div>
-              <p class="eyebrow">Network bindings</p>
-              <h1 id="portsTitle">Ports</h1>
+              <p class="eyebrow" data-i18n="networkBindings">Сетевые привязки</p>
+              <h1 id="portsTitle" data-i18n="portsTitle">Порты</h1>
             </div>
             <div class="toolbar-line">
-              <input id="portFilter" placeholder="Search port, protocol, address, state" />
+              <input id="portFilter" data-i18n-placeholder="portFilter" placeholder="Поиск порта, протокола, адреса, состояния" />
               <label class="check-control">
                 <input id="showAllPorts" type="checkbox" />
-                <span>All states</span>
+                <span data-i18n="allStates">Все состояния</span>
               </label>
               <button id="reloadPorts" class="icon-button" title="Reload ports">R</button>
             </div>
@@ -231,12 +242,12 @@
             <table>
               <thead>
                 <tr>
-                  <th data-port-sort="Port">Port</th>
-                  <th data-port-sort="Protocol">Protocol</th>
-                  <th data-port-sort="Address">Address</th>
-                  <th data-port-sort="State">State</th>
+                  <th data-port-sort="Port" data-i18n="port">Порт</th>
+                  <th data-port-sort="Protocol" data-i18n="protocol">Протокол</th>
+                  <th data-port-sort="Address" data-i18n="address">Адрес</th>
+                  <th data-port-sort="State" data-i18n="state">Состояние</th>
                   <th data-port-sort="PID">PID</th>
-                  <th>Actions</th>
+                  <th data-i18n="actions">Действия</th>
                 </tr>
               </thead>
               <tbody id="portRows"></tbody>

@@ -4,9 +4,159 @@ const state = {
   current: null,
   processSort: { key: "MemoryRSS", desc: true },
   portSort: { key: "Port", desc: false },
+  lang: localStorage.getItem("witr-lang") || "ru",
 };
 
 const $ = (id) => document.getElementById(id);
+
+const i18n = {
+  ru: {
+    action: "Действие",
+    actions: "Действия",
+    address: "Адрес",
+    allStates: "Все состояния",
+    analyze: "Анализ",
+    analyzing: "Анализ...",
+    apply: "Применить",
+    choosePid: "Выбери PID для продолжения",
+    children: "Дочерние процессы",
+    command: "Команда",
+    connecting: "Подключение...",
+    copied: "Raw output скопирован.",
+    copy: "Копировать",
+    details: "Подробнее",
+    envEmpty: "Переменные окружения не видны.",
+    envFilter: "Фильтр переменных окружения",
+    exact: "Точно",
+    health: "Состояние",
+    inspectEyebrow: "Живой анализ причин",
+    inspectPid: "Проверить PID",
+    inspectTitle: "Проверь процесс, порт, PID или файл",
+    language: "Язык",
+    listeningPorts: "Слушающие порты",
+    localServer: "Локальный сервер",
+    memory: "Память",
+    multipleMatches: "Несколько совпадений",
+    name: "Имя",
+    navInspect: "Проверка",
+    navPorts: "Порты",
+    navProcesses: "Процессы",
+    network: "Сеть",
+    networkBindings: "Сетевые привязки",
+    noAncestry: "Дерево запуска не найдено.",
+    noChildren: "Дочерние процессы не найдены.",
+    noListeningPorts: "Слушающие порты не найдены.",
+    noResult: "Нет результата",
+    noSocket: "Нет состояния сокета для этой цели.",
+    noWarnings: "Предупреждений нет.",
+    overview: "Обзор",
+    pause: "Пауза",
+    port: "Порт",
+    portFilter: "Поиск порта, протокола, адреса, состояния",
+    portsTitle: "Порты",
+    process: "Процесс",
+    processDetails: "Детали процесса",
+    processFilter: "Поиск PID, пользователя, имени, команды",
+    processesTitle: "Процессы",
+    protocol: "Протокол",
+    raw: "Raw",
+    ready: "Анализ завершён.",
+    resolvedTarget: "Найденная цель",
+    resume: "Продолжить",
+    runConfirm: "Выполнить",
+    shown: "показано",
+    socketState: "Состояние сокета",
+    source: "Источник",
+    started: "Запущен",
+    state: "Состояние",
+    systemSnapshot: "Снимок системы",
+    tagline: "Почему это запущено?",
+    target: "Цель",
+    targetFile: "Файл",
+    targetName: "Имя процесса",
+    targetPort: "Порт",
+    targetType: "Тип цели",
+    tree: "Дерево",
+    unknown: "неизвестно",
+    user: "Пользователь",
+    verbose: "Подробно",
+    warnings: "Предупреждения",
+  },
+  en: {
+    action: "Action",
+    actions: "Actions",
+    address: "Address",
+    allStates: "All states",
+    analyze: "Analyze",
+    analyzing: "Analyzing...",
+    apply: "Apply",
+    choosePid: "Choose a PID to continue",
+    children: "Children",
+    command: "Command",
+    connecting: "Connecting...",
+    copied: "Raw output copied.",
+    copy: "Copy",
+    details: "Details",
+    envEmpty: "No environment variables visible.",
+    envFilter: "Filter environment variables",
+    exact: "Exact",
+    health: "Health",
+    inspectEyebrow: "Live process causality",
+    inspectPid: "Inspect PID",
+    inspectTitle: "Inspect any process, port, PID, or file",
+    language: "Language",
+    listeningPorts: "Listening ports",
+    localServer: "Local server",
+    memory: "Memory",
+    multipleMatches: "Multiple matches",
+    name: "Name",
+    navInspect: "Inspect",
+    navPorts: "Ports",
+    navProcesses: "Processes",
+    network: "Network",
+    networkBindings: "Network bindings",
+    noAncestry: "No ancestry found.",
+    noChildren: "No direct children found.",
+    noListeningPorts: "No listening ports reported.",
+    noResult: "No result",
+    noSocket: "No socket state for this target.",
+    noWarnings: "No warnings reported.",
+    overview: "Overview",
+    pause: "Pause",
+    port: "Port",
+    portFilter: "Search port, protocol, address, state",
+    portsTitle: "Ports",
+    process: "Process",
+    processDetails: "Process details",
+    processFilter: "Search PID, user, name, command",
+    processesTitle: "Processes",
+    protocol: "Protocol",
+    raw: "Raw",
+    ready: "Analysis complete.",
+    resolvedTarget: "Resolved target",
+    resume: "Resume",
+    runConfirm: "Run",
+    shown: "shown",
+    socketState: "Socket state",
+    source: "Source",
+    started: "Started",
+    state: "State",
+    systemSnapshot: "System snapshot",
+    tagline: "Why is this running?",
+    target: "Target",
+    targetFile: "File",
+    targetName: "Process name",
+    targetPort: "Port",
+    targetType: "Target type",
+    tree: "Tree",
+    unknown: "unknown",
+    user: "User",
+    verbose: "Verbose",
+    warnings: "Warnings",
+  },
+};
+
+const t = (key) => i18n[state.lang][key] || i18n.en[key] || key;
 
 const node = (tag, className, text) => {
   const element = document.createElement(tag);
@@ -16,6 +166,54 @@ const node = (tag, className, text) => {
 };
 
 const cell = (text, className) => node("td", className, text);
+
+const applyI18n = () => {
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  $("languageSelect").value = state.lang;
+  if (!state.current) {
+    $("message").textContent = "";
+  }
+  renderProcesses();
+  renderPorts();
+  if (state.current) renderResult(state.current.result, state.current.output);
+};
+
+const iconSpec = (proc = {}) => {
+  const name = `${proc.Command || ""} ${proc.Cmdline || ""}`.toLowerCase();
+  if (proc.Container || name.includes("docker") || name.includes("containerd") || name.includes("podman")) {
+    return ["CNT", "container"];
+  }
+  if (proc.Service || name.includes("systemd") || name.includes("svchost") || name.includes("launchd")) {
+    return ["SYS", "system"];
+  }
+  if (/(chrome|edge|firefox|safari|browser|brave|opera)/.test(name)) return ["WEB", "web"];
+  if (/(postgres|mysql|mariadb|redis|mongo|sqlite|db)/.test(name)) return ["DB", "database"];
+  if (/(nginx|apache|httpd|caddy|traefik|node|bun|deno|uvicorn|gunicorn)/.test(name)) {
+    return ["SRV", "server"];
+  }
+  if (/(powershell|cmd.exe|bash|zsh|fish|terminal|conhost|wt.exe)/.test(name)) return ["SH", "shell"];
+  if (/(code|cursor|idea|goland|pycharm|webstorm|devenv)/.test(name)) return ["DEV", "dev"];
+  const command = (proc.Command || "?").replace(/\.exe$/i, "");
+  return [command.slice(0, 3).toUpperCase() || "APP", "app"];
+};
+
+const processIcon = (proc, size = "") => {
+  const [label, kind] = iconSpec(proc);
+  return node("span", `process-icon ${kind} ${size}`.trim(), label);
+};
+
+const processNameCell = (proc) => {
+  const wrapper = node("div", "process-name-cell");
+  const text = node("span", "", proc.Command || t("unknown"));
+  wrapper.append(processIcon(proc), text);
+  return wrapper;
+};
 
 const api = async (url, options = {}) => {
   const response = await fetch(url, {
@@ -93,7 +291,7 @@ const loadPorts = async () => {
 };
 
 const inspectTarget = async (payload) => {
-  setMessage("Analyzing...");
+  setMessage(t("analyzing"));
   $("matchesPanel").classList.add("hidden");
   try {
     const data = await api("/api/analyze", {
@@ -101,7 +299,7 @@ const inspectTarget = async (payload) => {
       body: JSON.stringify(payload),
     });
     renderResult(data.result, data.output);
-    setMessage("Analysis complete.");
+    setMessage(t("ready"));
   } catch (error) {
     if (error.status === 409 && error.data.matches) {
       renderMatches(error.data.matches);
@@ -136,10 +334,11 @@ const renderMatches = (matches) => {
     const title = node("strong", "", proc.Command || "unknown");
     const pid = node("span", "muted", ` PID ${proc.PID}`);
     const cmd = node("span", "muted mono", proc.Cmdline || "");
-    const button = node("button", "", "Inspect PID");
+    const button = node("button", "", t("inspectPid"));
     button.type = "button";
     button.addEventListener("click", () => inspectPID(proc.PID));
     title.appendChild(pid);
+    card.prepend(processIcon(proc, "lg"));
     card.append(title, cmd, button);
     list.appendChild(card);
   }
@@ -154,12 +353,15 @@ const renderResult = (result, output = {}) => {
   const src = result.Source || {};
   $("resultPanel").classList.remove("hidden");
   $("matchesPanel").classList.add("hidden");
-  $("processName").textContent = proc.Command || result.ResolvedTarget || "unknown";
+  const icon = processIcon(proc, "lg");
+  icon.id = "processIcon";
+  $("processIcon").replaceWith(icon);
+  $("processName").textContent = proc.Command || result.ResolvedTarget || t("unknown");
   $("processCmd").textContent = proc.Cmdline || proc.Exe || "";
   $("processPid").textContent = proc.PID || "0";
-  $("sourceType").textContent = src.Name || src.Type || "unknown";
-  $("processUser").textContent = proc.User || "unknown";
-  $("processHealth").textContent = proc.Health || "unknown";
+  $("sourceType").textContent = src.Name || src.Type || t("unknown");
+  $("processUser").textContent = proc.User || t("unknown");
+  $("processHealth").textContent = proc.Health || t("unknown");
   $("processStarted").textContent = fmtDate(proc.StartedAt);
 
   renderDetails(result);
@@ -174,21 +376,21 @@ const detailRows = (result) => {
   const proc = result.Process || {};
   const src = result.Source || {};
   return [
-    ["Executable", proc.Exe],
-    ["Working directory", proc.WorkingDir],
-    ["Git repository", proc.GitRepo],
-    ["Git branch", proc.GitBranch],
+    [state.lang === "ru" ? "Исполняемый файл" : "Executable", proc.Exe],
+    [state.lang === "ru" ? "Рабочая папка" : "Working directory", proc.WorkingDir],
+    [state.lang === "ru" ? "Git репозиторий" : "Git repository", proc.GitRepo],
+    [state.lang === "ru" ? "Git ветка" : "Git branch", proc.GitBranch],
     ["Container", proc.Container],
     ["Service", proc.Service],
-    ["Source description", src.Description],
-    ["Source unit file", src.UnitFile],
-    ["Parent PID", proc.PPID],
+    [state.lang === "ru" ? "Описание источника" : "Source description", src.Description],
+    [state.lang === "ru" ? "Unit файл" : "Source unit file", src.UnitFile],
+    [state.lang === "ru" ? "Родительский PID" : "Parent PID", proc.PPID],
     ["CPU", proc.CPUPercent ? `${proc.CPUPercent.toFixed(1)}%` : ""],
     ["Memory", proc.MemoryRSS ? `${fmtBytes(proc.MemoryRSS)} (${(proc.MemoryPercent || 0).toFixed(1)}%)` : ""],
-    ["Threads", proc.ThreadCount],
-    ["File descriptors", proc.FDCount ? `${proc.FDCount} / ${proc.FDLimit || "?"}` : ""],
-    ["Capabilities", (proc.Capabilities || []).join(", ")],
-    ["Binary deleted", proc.ExeDeleted ? "yes" : "no"],
+    [state.lang === "ru" ? "Потоки" : "Threads", proc.ThreadCount],
+    [state.lang === "ru" ? "Файловые дескрипторы" : "File descriptors", proc.FDCount ? `${proc.FDCount} / ${proc.FDLimit || "?"}` : ""],
+    [state.lang === "ru" ? "Capabilities" : "Capabilities", (proc.Capabilities || []).join(", ")],
+    [state.lang === "ru" ? "Бинарник удалён" : "Binary deleted", proc.ExeDeleted ? (state.lang === "ru" ? "да" : "yes") : (state.lang === "ru" ? "нет" : "no")],
   ].filter(([, value]) => value !== undefined && value !== null && value !== "");
 };
 
@@ -210,7 +412,7 @@ const renderWarnings = (warnings) => {
   if (!warnings.length) {
     const empty = document.createElement("div");
     empty.className = "compact-row muted";
-    empty.textContent = "No warnings reported.";
+    empty.textContent = t("noWarnings");
     list.appendChild(empty);
     return;
   }
@@ -227,28 +429,28 @@ const renderTree = (result) => {
   graph.replaceChildren();
   const ancestry = result.Ancestry || [];
   ancestry.forEach((proc, index) => {
-    const node = document.createElement("div");
-    node.className = `tree-node ${index === ancestry.length - 1 ? "current" : ""}`;
-    node.style.marginLeft = `${Math.min(index * 24, 180)}px`;
-    node.textContent = `${proc.Command || "unknown"} (PID ${proc.PID})`;
-    node.addEventListener("click", () => inspectPID(proc.PID));
-    graph.appendChild(node);
+    const treeNode = document.createElement("div");
+    treeNode.className = `tree-node ${index === ancestry.length - 1 ? "current" : ""}`;
+    treeNode.style.marginLeft = `${Math.min(index * 24, 180)}px`;
+    treeNode.replaceChildren(processIcon(proc), node("span", "", `${proc.Command || t("unknown")} (PID ${proc.PID})`));
+    treeNode.addEventListener("click", () => inspectPID(proc.PID));
+    graph.appendChild(treeNode);
   });
   if (!ancestry.length) {
-    graph.replaceChildren(node("div", "compact-row muted", "No ancestry found."));
+    graph.replaceChildren(node("div", "compact-row muted", t("noAncestry")));
   }
 
   const children = $("childrenList");
   children.replaceChildren();
   const childList = result.Children || [];
   if (!childList.length) {
-    children.replaceChildren(node("div", "compact-row muted", "No direct children found."));
+    children.replaceChildren(node("div", "compact-row muted", t("noChildren")));
     return;
   }
   for (const child of childList.slice(0, 30)) {
     const row = document.createElement("button");
     row.className = "compact-row row-action";
-    row.textContent = `${child.Command || "unknown"} (PID ${child.PID})`;
+    row.replaceChildren(processIcon(child), node("span", "", `${child.Command || t("unknown")} (PID ${child.PID})`));
     row.addEventListener("click", () => inspectPID(child.PID));
     children.appendChild(row);
   }
@@ -261,7 +463,7 @@ const renderNetwork = (result) => {
   const portList = proc.ListeningPorts || [];
   const addrList = proc.BindAddresses || [];
   if (!portList.length) {
-    ports.replaceChildren(node("div", "compact-row muted", "No listening ports reported."));
+    ports.replaceChildren(node("div", "compact-row muted", t("noListeningPorts")));
   } else {
     portList.forEach((port, index) => {
       const row = document.createElement("div");
@@ -272,14 +474,14 @@ const renderNetwork = (result) => {
   }
   $("socketInfo").textContent = result.SocketInfo
     ? JSON.stringify(result.SocketInfo, null, 2)
-    : "No socket state for this target.";
+    : t("noSocket");
 };
 
 const renderEnv = (env) => {
   const filter = $("envFilter").value.trim().toLowerCase();
   const visible = env.filter((line) => !filter || line.toLowerCase().includes(filter));
-  $("envCount").textContent = `${visible.length} shown`;
-  $("envOutput").textContent = visible.length ? visible.join("\n") : "No environment variables visible.";
+  $("envCount").textContent = `${visible.length} ${t("shown")}`;
+  $("envOutput").textContent = visible.length ? visible.join("\n") : t("envEmpty");
 };
 
 const renderRaw = () => {
@@ -311,14 +513,18 @@ const renderProcesses = () => {
   for (const proc of list) {
     const tr = document.createElement("tr");
     const actionCell = document.createElement("td");
-    const button = node("button", "row-action", "Details");
+    const button = node("button", "row-action", t("details"));
     button.type = "button";
     button.addEventListener("click", () => inspectPID(proc.PID));
     actionCell.appendChild(button);
     tr.append(
       cell(proc.PID, "mono"),
       cell(proc.User || ""),
-      cell(proc.Command || ""),
+      (() => {
+        const td = cell("");
+        td.appendChild(processNameCell(proc));
+        return td;
+      })(),
       cell(proc.CPUPercent ? `${proc.CPUPercent.toFixed(1)}%` : ""),
       cell(fmtBytes(proc.MemoryRSS)),
       cell(fmtDate(proc.StartedAt)),
@@ -349,11 +555,11 @@ const renderPorts = () => {
     const tr = document.createElement("tr");
     const actionCell = document.createElement("td");
     actionCell.className = "row-actions";
-    const processButton = node("button", "row-action", "Process");
+    const processButton = node("button", "row-action", t("process"));
     processButton.type = "button";
     processButton.disabled = !port.PID;
     processButton.addEventListener("click", () => inspectPID(port.PID));
-    const portButton = node("button", "row-action", "Port");
+    const portButton = node("button", "row-action", t("port"));
     portButton.type = "button";
     portButton.addEventListener("click", () => inspectPort(port.Port));
     actionCell.append(processButton, portButton);
@@ -380,7 +586,7 @@ const runAction = async (action) => {
   const pid = state.current.result.Process.PID;
   const nice = Number($("niceValue").value || 0);
   const label = action === "renice" ? `renice PID ${pid} to ${nice}` : `${action} PID ${pid}`;
-  if (!window.confirm(`Run ${label}?`)) return;
+  if (!window.confirm(`${t("runConfirm")} ${label}?`)) return;
   try {
     const response = await api("/api/action", {
       method: "POST",
@@ -423,7 +629,13 @@ const bindEvents = () => {
   $("rawMode").addEventListener("change", renderRaw);
   $("copyRaw").addEventListener("click", async () => {
     await navigator.clipboard.writeText($("rawOutput").textContent || "");
-    setMessage("Raw output copied.");
+    setMessage(t("copied"));
+  });
+
+  $("languageSelect").addEventListener("change", (event) => {
+    state.lang = event.target.value;
+    localStorage.setItem("witr-lang", state.lang);
+    applyI18n();
   });
 
   document.querySelectorAll("[data-action]").forEach((button) => {
@@ -450,6 +662,7 @@ const bindEvents = () => {
 
 const boot = async () => {
   bindEvents();
+  applyI18n();
   await statusText();
   await Promise.allSettled([loadProcesses(), loadPorts()]);
 };
